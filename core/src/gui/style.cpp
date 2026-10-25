@@ -7,6 +7,7 @@
 
 namespace style {
     ImFont* baseFont;
+    ImFont* menuFont;
     ImFont* bigFont;
     ImFont* hugeFont;
     ImVector<ImWchar> baseRanges;
@@ -46,6 +47,12 @@ namespace style {
         
         // Add bigger fonts for frequency select and title
         baseFont = fonts->AddFontFromFileTTF(((std::string)(resDir + "/fonts/Roboto-Medium.ttf")).c_str(), 16.0f * uiScale, NULL, baseRanges.Data);
+
+        // Slightly larger, bold font for the module titles in the left menu.
+        std::string menuFontPath = resDir + "/fonts/Roboto-Bold.ttf";
+        if (!std::filesystem::exists(menuFontPath)) { menuFontPath = resDir + "/fonts/Roboto-Medium.ttf"; }
+        menuFont = fonts->AddFontFromFileTTF(menuFontPath.c_str(), 18.0f * uiScale, NULL, baseRanges.Data);
+
         bigFont = fonts->AddFontFromFileTTF(((std::string)(resDir + "/fonts/Roboto-Medium.ttf")).c_str(), 45.0f * uiScale, NULL, bigRanges.Data);
         hugeFont = fonts->AddFontFromFileTTF(((std::string)(resDir + "/fonts/Roboto-Medium.ttf")).c_str(), 128.0f * uiScale, NULL, hugeRanges.Data);
 
