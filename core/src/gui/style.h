@@ -5,6 +5,7 @@
 
 namespace style {
     SDRPP_EXPORT ImFont* baseFont;
+    SDRPP_EXPORT ImFont* menuFont;
     SDRPP_EXPORT ImFont* bigFont;
     SDRPP_EXPORT ImFont* hugeFont;
     SDRPP_EXPORT float uiScale;

@@ -341,7 +341,8 @@ private:
         { RADIO_IFACE_MODE_USB, "USB" },
         { RADIO_IFACE_MODE_CW,  "CW"  },
         { RADIO_IFACE_MODE_LSB, "LSB" },
-        { RADIO_IFACE_MODE_RAW, "RAW" }
+        { RADIO_IFACE_MODE_RAW, "RAW" },
+        { RADIO_IFACE_MODE_ADSB, "ADSB" }
     };
 
     void commandHandler(std::string cmd) {
@@ -430,7 +431,7 @@ private:
 
             // If client is querying, respond accordingly
             if (parts.size() >= 2 && parts[1] == "?") {
-                resp = "FM WFM AM DSB USB CW LSB RAW\n";
+                resp = "FM WFM AM DSB USB CW LSB RAW ADSB\n";
                 client->write(resp.size(), (uint8_t*)resp.c_str());
                 return;
             }

@@ -6,6 +6,29 @@
 Menu::Menu() {
 }
 
+static bool menuHeader(const char* label, const ImVec2& posMin, float menuWidth, float headerHeight, bool disabled = false) {
+    ImDrawList* dl = ImGui::GetWindowDrawList();
+    ImU32 bg = disabled ? IM_COL32(12, 40, 22, 255) : IM_COL32(16, 60, 32, 255);
+    dl->AddRectFilled(posMin, ImVec2(posMin.x + menuWidth, posMin.y + headerHeight), bg, ImGui::GetStyle().FrameRounding);
+
+    ImVec4 hdr = disabled ? ImVec4(0.05f, 0.16f, 0.08f, 1.0f) : ImVec4(0.06f, 0.24f, 0.13f, 1.0f);
+    ImVec4 hov = disabled ? ImVec4(0.06f, 0.19f, 0.10f, 1.0f) : ImVec4(0.09f, 0.32f, 0.18f, 1.0f);
+    ImVec4 act = disabled ? ImVec4(0.07f, 0.22f, 0.12f, 1.0f) : ImVec4(0.11f, 0.38f, 0.21f, 1.0f);
+    ImVec4 txt = disabled ? ImVec4(0.62f, 0.68f, 0.62f, 1.0f) : ImVec4(0.94f, 0.98f, 0.94f, 1.0f);
+
+    ImGui::PushFont(style::menuFont);
+    ImGui::PushStyleColor(ImGuiCol_Header, hdr);
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, hov);
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, act);
+    ImGui::PushStyleColor(ImGuiCol_Text, txt);
+    bool open = ImGui::CollapsingHeader(label);
+    ImGui::PopStyleColor(4);
+    ImGui::PopFont();
+    return open;
+}
+
+
+
 void Menu::registerEntry(std::string name, void (*drawHandler)(void* ctx), void* ctx, ModuleManager::Instance* inst) {
     MenuItem_t item;
     item.drawHandler = drawHandler;
@@ -28,7 +51,11 @@ bool Menu::draw(bool updateStates) {
     bool changed = false;
     float menuWidth = ImGui::GetContentRegionAvail().x;
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    ImVec2 checkboxOffset = ImVec2(menuWidth - ImGui::GetTextLineHeight() - (6.0f * style::uiScale), - ImGui::GetTextLineHeight() - (10.0f * style::uiScale));
+    ImGui::PushFont(style::menuFont);
+    float headerHeight = ImGui::GetFrameHeight();
+    float headerFontSize = ImGui::GetFontSize();
+    ImGui::PopFont();
+    ImVec2 checkboxOffset = ImVec2(menuWidth - headerFontSize - (6.0f * style::uiScale), - headerFontSize - (10.0f * style::uiScale));
 
     int displayedCount = 0;
     int rawId = 0;
@@ -51,10 +78,10 @@ bool Menu::draw(bool updateStates) {
         if (displayedCount == insertBefore && !draggedMenuName.empty()) {
             if (updateStates) { ImGui::SetNextItemOpen(false); }
             ImVec2 posMin = ImGui::GetCursorScreenPos();
-            ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + ImGui::GetFrameHeight());
+            ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + headerHeight);
             style::beginDisabled();
             ImRect orignalRect = window->WorkRect;
-            ImGui::CollapsingHeader((draggedMenuName + "##sdrpp_main_menu_dragging").c_str());
+            menuHeader((draggedMenuName + "##sdrpp_main_menu_dragging").c_str(), posMin, menuWidth, headerHeight, true);
             if (items[draggedOpt.name].inst != NULL) {
                 window->WorkRect = orignalRect;
                 ImVec2 pos = ImGui::GetCursorPos();
@@ -74,11 +101,11 @@ bool Menu::draw(bool updateStates) {
 
         ImRect orginalRect = window->WorkRect;
         if (item.inst != NULL) {
-            window->WorkRect = ImRect(orginalRect.Min, ImVec2(orginalRect.Max.x - ImGui::GetTextLineHeight() - (6.0f * style::uiScale), orginalRect.Max.y));
+            window->WorkRect = ImRect(orginalRect.Min, ImVec2(orginalRect.Max.x - headerFontSize - (6.0f * style::uiScale), orginalRect.Max.y));
         }
 
         ImVec2 posMin = ImGui::GetCursorScreenPos();
-        ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + ImGui::GetFrameHeight());
+        ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + headerHeight);
 
         headerTops[displayedCount - 1] = posMin.y;
         optionIDs[displayedCount - 1] = rawId - 1;
@@ -101,7 +128,7 @@ bool Menu::draw(bool updateStates) {
 
         // Draw menu header and menu content. There is a lot of boilerplate because the checkbox has to be drawn before the menu, TODO: fix
         if (updateStates) { ImGui::SetNextItemOpen(opt.open); }
-        if (ImGui::CollapsingHeader((opt.name + "##sdrpp_main_menu").c_str())) {
+        if (menuHeader((opt.name + "##sdrpp_main_menu").c_str(), posMin, menuWidth, headerHeight)) {
             if (item.inst != NULL) {
                 window->WorkRect = orginalRect;
                 ImVec2 pos = ImGui::GetCursorPos();
@@ -179,10 +206,10 @@ bool Menu::draw(bool updateStates) {
     if (insertBefore == displayedCount && !draggedMenuName.empty()) {
         if (updateStates) { ImGui::SetNextItemOpen(false); }
         ImVec2 posMin = ImGui::GetCursorScreenPos();
-        ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + ImGui::GetFrameHeight());
+        ImVec2 posMax = ImVec2(posMin.x + menuWidth, posMin.y + headerHeight);
         style::beginDisabled();
         ImRect orignalRect = window->WorkRect;
-        ImGui::CollapsingHeader((draggedMenuName + "##sdrpp_main_menu_dragging").c_str());
+        menuHeader((draggedMenuName + "##sdrpp_main_menu_dragging").c_str(), posMin, menuWidth, headerHeight, true);
         if (items[draggedOpt.name].inst != NULL) {
             window->WorkRect = orignalRect;
             ImVec2 pos = ImGui::GetCursorPos();

@@ -182,6 +182,7 @@ public:
         RADIO_DEMOD_CW,
         RADIO_DEMOD_LSB,
         RADIO_DEMOD_RAW,
+        RADIO_DEMOD_ADSB,
         _RADIO_DEMOD_COUNT,
     };
 
@@ -221,6 +222,9 @@ private:
         }
         if (ImGui::RadioButton(CONCAT("RAW##_", _this->name), _this->selectedDemodID == 7) && _this->selectedDemodID != 7) {
             _this->selectDemodByID(RADIO_DEMOD_RAW);
+        };
+        if (ImGui::RadioButton(CONCAT("ADS-B##_", _this->name), _this->selectedDemodID == 8) && _this->selectedDemodID != 8) {
+            _this->selectDemodByID(RADIO_DEMOD_ADSB);
         };
         ImGui::Columns(1, CONCAT("EndRadioModeColumns##_", _this->name), false);
 
@@ -373,6 +377,7 @@ private:
             case DemodID::RADIO_DEMOD_CW:   demod = new demod::CW();  break;
             case DemodID::RADIO_DEMOD_LSB:  demod = new demod::LSB(); break;
             case DemodID::RADIO_DEMOD_RAW:  demod = new demod::RAW(); break;
+            case DemodID::RADIO_DEMOD_ADSB: demod = new demod::ADSB(); break;
             default:                        demod = NULL;             break;
         }
         if (!demod) { return NULL; }
@@ -399,6 +404,7 @@ private:
     }
 
     void selectDemodByID(DemodID id) {
+        if (selectedDemod && id == selectedDemodID) { return; }
         auto startTime = std::chrono::high_resolution_clock::now();
         demod::Demodulator* demod = instantiateDemod(id);
         if (!demod) {
