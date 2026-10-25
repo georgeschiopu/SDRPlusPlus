@@ -498,3 +498,5 @@ For code changes, please create a feature request instead.
 * [json (nlohmann)](https://github.com/nlohmann/json)
 * [rtaudio](http://www.portaudio.com/)
 * [Portable File Dialogs](https://github.com/samhocevar/portable-file-dialogs)
+
+.new gpg
